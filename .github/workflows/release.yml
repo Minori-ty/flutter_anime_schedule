@@ -1,0 +1,54 @@
+name: Build and Release Flutter APK
+
+on:
+    push:
+        tags:
+            - 'v*.*.*' # Triggers the workflow when a tag is pushed
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up JDK 17
+              uses: actions/setup-java@v4
+              with:
+                  java-version: '17'
+                  distribution: 'temurin'
+                  java-package: 'jdk'
+                  check-latest: false
+                  server-id: github
+                  server-username: ${{ github.actor }}
+                  server-password: ${{ secrets.GITHUB_TOKEN }}
+                  overwrite-settings: true
+
+            - name: Set up Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  flutter-version: '3.27.4'
+                  channel: 'stable'
+
+            - name: Install dependencies
+              run: flutter pub get
+
+            - name: Build APK
+              run: flutter build apk --release
+
+            - name: List generated files
+              run: ls -R build/app/outputs/flutter-apk/
+
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v2
+              env:
+                  GITHUB_TOKEN: ${{ secrets.MY_GITHUB_PAT }}
+              with:
+                  tag_name: ${{ github.ref_name }} # Use github.ref_name for the correct tag name
+                  name: ${{ github.ref_name }} # Use github.ref_name for the correct release name
+                  body: |
+                      APK for version ${{ github.ref_name }}
+                  draft: false
+                  prerelease: false
+                  files: build/app/outputs/flutter-apk/app-release.apk # Ensure the path is correct
