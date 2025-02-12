@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MainPage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -29,7 +30,6 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: Obx(() {
         return IndexedStack(
           index: mainController.selectedIndex.value,
