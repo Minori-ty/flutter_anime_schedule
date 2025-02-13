@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 import 'package:flutter_anime_schedule/src/services/anime_service.dart';
 import 'package:flutter_anime_schedule/src/pages/add_anime.dart';
+import 'package:flutter_anime_schedule/src/utils/index.dart';
 
 class MyAnimePage extends StatefulWidget {
   const MyAnimePage({super.key});
@@ -51,8 +52,8 @@ class _MyAnimePageState extends State<MyAnimePage> {
               return GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 8,
                   childAspectRatio: 2 / 3.5,
                 ),
                 itemCount: animes.length,
@@ -104,8 +105,13 @@ class _MyAnimePageState extends State<MyAnimePage> {
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 4.0, vertical: 2.0),
                                   color: Colors.red,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                      bottomLeft: Radius.circular(8.0),
+                                    ),
+                                  ),
                                   child: Text(
-                                    '连载中',
+                                    isAnimeCompleted(anime) ? "已完结" : '连载中',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 10.0,
@@ -129,7 +135,7 @@ class _MyAnimePageState extends State<MyAnimePage> {
                         Padding(
                           padding: const EdgeInsets.all(2.0),
                           child: Text(
-                            '第1集',
+                            '更新 第${getEpisodesToUpdateThisWeek(anime)}集',
                             style: TextStyle(
                               fontSize: 12.0,
                             ),
