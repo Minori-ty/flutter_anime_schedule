@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 import 'package:get/get.dart';
 import 'package:flutter_anime_schedule/src/pages/schedule.dart';
 import 'package:flutter_anime_schedule/src/pages/my_anime.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  // 确保 Flutter 的绑定被初始化
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 初始化 Hive
+  await Hive.initFlutter();
+  Hive.registerAdapter(AnimeModelAdapter());
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

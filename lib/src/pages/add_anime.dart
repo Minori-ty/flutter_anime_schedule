@@ -1,42 +1,164 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter_anime_schedule/src/models/anime_model.dart';
+import 'package:flutter_anime_schedule/src/services/anime_service.dart';
 
-class AddAnimePage extends StatelessWidget {
-  final TextEditingController animeController = TextEditingController();
+class AnimeFormPage extends StatefulWidget {
+  @override
+  _AnimeFormPageState createState() => _AnimeFormPageState();
+}
 
-  AddAnimePage({super.key});
+class _AnimeFormPageState extends State<AnimeFormPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _animeService = AnimeService();
+
+  String _name = '';
+  String _updateWeek = '';
+  TimeOfDay _updateTime = TimeOfDay(hour: 0, minute: 0);
+  int _currentEpisode = 0;
+  int _totalEpisode = 0;
+  String _cover = '';
+
+  final _updateWeeks = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _updateTime,
+    );
+    if (picked != null && picked != _updateTime) {
+      setState(() {
+        _updateTime = picked;
+      });
+    }
+  }
+
+  String _formatTimeOfDay(TimeOfDay timeOfDay) {
+    final hour = timeOfDay.hour.toString().padLeft(2, '0');
+    final minute = timeOfDay.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('添加新追番'),
+        title: Text('添加番剧'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: animeController,
-              decoration: InputDecoration(
-                labelText: '追番名称',
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: <Widget>[
+              TextFormField(
+                decoration: InputDecoration(labelText: '番剧名称'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '请输入番剧名称';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _name = value!;
+                },
               ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // 在这里处理创建新追番的逻辑
-                String newAnime = animeController.text;
-                if (newAnime.isNotEmpty) {
-                  // 例如，将新追番添加到列表中或数据库中
-                  Get.back();
-                }
-              },
-              child: Text('创建'),
-            ),
-          ],
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(labelText: '更新周'),
+                value: _updateWeek.isNotEmpty ? _updateWeek : null,
+                items: _updateWeeks.map((week) {
+                  return DropdownMenuItem(
+                    value: week,
+                    child: Text(week),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _updateWeek = newValue!;
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '请选择更新周';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _updateWeek = value!;
+                },
+              ),
+              ListTile(
+                title: Text("更新时间点: ${_updateTime.format(context)}"),
+                trailing: Icon(Icons.access_time),
+                onTap: () => _selectTime(context),
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: '当前更新集数'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '请输入当前更新集数';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _currentEpisode = int.parse(value!);
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: '总集数'),
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '请输入总集数';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _totalEpisode = int.parse(value!);
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: '封面 URL'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '请输入封面 URL';
+                  }
+                  return null;
+                },
+                onSaved: (value) {
+                  _cover = value!;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _submitForm,
+                child: Text('添加'),
+              ),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      AnimeModel newAnime = AnimeModel(
+        name: _name,
+        updateWeek: _updateWeek,
+        updateTime: _formatTimeOfDay(_updateTime),
+        currentEpisode: _currentEpisode,
+        totalEpisode: _totalEpisode,
+        cover: _cover,
+      );
+      var result = await _animeService.addAnime(newAnime);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['msg'])),
+      );
+      if (result['code'] == 200) {
+        Navigator.pop(context, true);
+      }
+    }
   }
 }
