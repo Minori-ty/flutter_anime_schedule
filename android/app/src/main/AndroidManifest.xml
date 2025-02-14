@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="flutter_anime_schedule"
+        android:label="动漫更新表"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

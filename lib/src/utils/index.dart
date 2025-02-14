@@ -90,7 +90,7 @@ bool isAnimeCompleted(AnimeModel anime) {
 
   DateTime now = DateTime.now();
   Duration difference = now.difference(firstEpisodeTime);
-  int totalDurationInMinutes = anime.totalEpisode * 7 * 24 * 60;
+  int totalDurationInMinutes = (anime.totalEpisode - 1) * 7 * 24 * 60;
 
   return difference.inMinutes >= totalDurationInMinutes;
 }
@@ -184,10 +184,13 @@ Map<String, Map<String, List<AnimeModel>>> groupAnimeByWeekAndTime(
   };
 
   for (AnimeModel anime in animeList) {
-    if (!groupedAnime[anime.updateWeek]!.containsKey(anime.updateTime)) {
-      groupedAnime[anime.updateWeek]![anime.updateTime] = [];
+    // 过滤掉在本周之前完结的动漫
+    if (isLastUpdateInThisWeekOrLater(anime)) {
+      if (!groupedAnime[anime.updateWeek]!.containsKey(anime.updateTime)) {
+        groupedAnime[anime.updateWeek]![anime.updateTime] = [];
+      }
+      groupedAnime[anime.updateWeek]![anime.updateTime]!.add(anime);
     }
-    groupedAnime[anime.updateWeek]![anime.updateTime]!.add(anime);
   }
 
   return groupedAnime;
@@ -234,4 +237,41 @@ bool isDateInTargetWeek(DateCheckModel model) {
   // 判断date是否在target所属的那周
   return date.isAfter(startOfWeek.subtract(const Duration(seconds: 1))) &&
       date.isBefore(endOfWeek.add(const Duration(seconds: 1)));
+}
+
+/// 根据番剧信息计算最后一集的更新时间
+DateTime getLastUpdateDate(AnimeModel anime) {
+  // 获取第一集的更新时间并解析为DateTime对象
+  DateTime firstEpisodeDate = DateTime.parse(getFirstEpisodeTime(anime));
+
+  // 计算最后一集的日期
+  DateTime lastEpisodeDate =
+      firstEpisodeDate.add(Duration(days: (anime.totalEpisode - 1) * 7));
+
+  // 设置最后一集的时间
+  lastEpisodeDate = DateTime(
+    lastEpisodeDate.year,
+    lastEpisodeDate.month,
+    lastEpisodeDate.day,
+    firstEpisodeDate.hour,
+    firstEpisodeDate.minute,
+  );
+
+  return lastEpisodeDate;
+}
+
+/// 判断番剧的最后更新日期是否在本周及以后
+bool isLastUpdateInThisWeekOrLater(AnimeModel anime) {
+  // 获取当前日期
+  DateTime now = DateTime.now();
+
+  // 获取本周的周一日期
+  DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+
+  // 获取最后更新日期
+  DateTime lastUpdateDate = getLastUpdateDate(anime);
+
+  // 判断最后更新日期是否在本周及以后
+  return lastUpdateDate.isAfter(startOfWeek) ||
+      lastUpdateDate.isAtSameMomentAs(startOfWeek);
 }

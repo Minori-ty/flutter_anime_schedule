@@ -100,14 +100,12 @@ class _SchedulePageState extends State<SchedulePage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Text(
-                    time,
-                    style: const TextStyle(
-                      fontSize: 15,
-                    ),
-                  ),
+                SizedBox(
+                  width: 60,
+                  child: Text(time,
+                      style: const TextStyle(
+                        fontSize: 15,
+                      )),
                 ),
                 Expanded(
                   child: Column(
@@ -145,7 +143,7 @@ class _SchedulePageState extends State<SchedulePage> {
                                   ),
                                 ),
                                 Text(
-                                  '${isUpdateTimeReached(anime) ? '更新到' : "即将更新"} 第${getCurrentWeekUpdatedEpisodes(anime)} 集',
+                                  '${isUpdateTimeReached(anime) ? '更新到' : "即将更新"} 第${getCurrentWeekUpdatedEpisodes(anime)}集',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: isUpdateTimeReached(anime)
