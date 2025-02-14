@@ -147,18 +147,22 @@ Map<String, Map<String, List<AnimeModel>>> groupAnimeByWeekAndTime(
   return groupedAnime;
 }
 
-/// 判断本周是否已经到了更新时间，未到则返回 false，到了或者超过则返回 true
-bool isUpdateTimeReached(AnimeModel anime) {
+/// 判断当前时间是否已经到了更新时间点，本周未到则返回 false，到了或者超过则返回 true
+bool isCurrentTimeReachedUpdateTime(AnimeModel anime) {
   DateTime now = DateTime.now();
+  int currentWeekday = now.weekday;
   int updateWeekday = _convertWeekdayToInt(anime.updateWeek);
-  List<String> timeParts = anime.updateTime.split(':');
-  DateTime updateTimeThisWeek = DateTime(now.year, now.month, now.day,
-      int.parse(timeParts[0]), int.parse(timeParts[1]));
 
-  while (updateTimeThisWeek.weekday != updateWeekday) {
-    updateTimeThisWeek = updateTimeThisWeek.add(const Duration(days: 1));
+  if (currentWeekday < updateWeekday) {
+    return false;
+  } else if (currentWeekday > updateWeekday) {
+    return true;
+  } else {
+    // currentWeekday == updateWeekday
+    List<String> timeParts = anime.updateTime.split(':');
+    DateTime updateTimeToday = DateTime(now.year, now.month, now.day,
+        int.parse(timeParts[0]), int.parse(timeParts[1]));
+    return now.isAfter(updateTimeToday) ||
+        now.isAtSameMomentAs(updateTimeToday);
   }
-
-  return now.isAfter(updateTimeThisWeek) ||
-      now.isAtSameMomentAs(updateTimeThisWeek);
 }

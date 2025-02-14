@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 import 'package:flutter_anime_schedule/src/services/anime_service.dart';
 import 'package:flutter_anime_schedule/src/pages/add_anime.dart';
+import 'package:flutter_anime_schedule/src/pages/anime_detail.dart';
 import 'package:flutter_anime_schedule/src/utils/index.dart';
 
 class MyAnimePage extends StatefulWidget {
@@ -15,16 +16,30 @@ const double space = 12;
 
 class _MyAnimePageState extends State<MyAnimePage> {
   final AnimeService _animeService = AnimeService();
+  Future<Map<String, dynamic>>? _animeFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchAnimes();
+  }
+
+  void _fetchAnimes() {
+    _animeFuture = _animeService.getAnimes();
+  }
 
   Future<void> _refreshAnimes() async {
+    _fetchAnimes();
     setState(() {});
+    // 等待数据加载结束，确保刷新指示器正确结束
+    await _animeFuture;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('追番列表'),
+        title: const Text('追番列表'),
         actions: [
           IconButton(
             onPressed: () async {
@@ -36,124 +51,164 @@ class _MyAnimePageState extends State<MyAnimePage> {
                 _refreshAnimes();
               }
             },
-            icon: Icon(Icons.add),
+            icon: const Icon(Icons.add),
           ),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: space),
-        child: FutureBuilder(
-          future: _animeService.getAnimes(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-              var data = snapshot.data as Map<String, dynamic>;
-              var animes = data['data'] as List<AnimeModel>;
-              return GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: space,
-                  mainAxisSpacing: space,
-                  childAspectRatio: 2 / 3.5,
-                ),
-                itemCount: animes.length,
-                itemBuilder: (context, index) {
-                  var anime = animes[index];
-                  return GestureDetector(
-                    onLongPress: () async {
-                      bool? confirm = await showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text('确认删除'),
-                          content: Text('你确定要删除 "${anime.name}" 吗？'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: Text('取消'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              child: Text('删除'),
-                            ),
-                          ],
-                        ),
-                      );
-                      if (confirm == true) {
-                        await _animeService.deleteAnime(anime.id);
-                        _refreshAnimes();
-                      }
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  image: DecorationImage(
-                                    image: NetworkImage(anime.cover),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
+        // RefreshIndicator 的 child 必须是一个可滚动组件，
+        // 当数据加载时或出现错误时，也返回一个 ListView，使界面始终可滚动，
+        // 避免因内容不足而反复触发刷新
+        child: RefreshIndicator(
+          onRefresh: _refreshAnimes,
+          child: FutureBuilder(
+            future: _animeFuture,
+            builder: (context, snapshot) {
+              // 当数据正在加载时，用一个 ListView 包裹 loading 指示器
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: const [
+                    SizedBox(height: 200), // 占位，保证足够高度
+                    Center(child: CircularProgressIndicator()),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    const SizedBox(height: 200),
+                    Center(child: Text('Error: ${snapshot.error}')),
+                  ],
+                );
+              } else if (snapshot.hasData) {
+                var data = snapshot.data as Map<String, dynamic>;
+                var animes = data['data'] as List<AnimeModel>;
+                return GridView.builder(
+                  // 设置 AlwaysScrollableScrollPhysics 确保即使内容较少也能下拉刷新
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: space,
+                    mainAxisSpacing: space,
+                    childAspectRatio: 2 / 3.7,
+                  ),
+                  itemCount: animes.length,
+                  itemBuilder: (context, index) {
+                    var anime = animes[index];
+                    return GestureDetector(
+                      onTap: () async {
+                        bool? result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AnimeDetailPage(anime: anime),
+                          ),
+                        );
+                        if (result == true) {
+                          _refreshAnimes();
+                        }
+                      },
+                      onLongPress: () async {
+                        bool? confirm = await showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('确认删除'),
+                            content: Text('你确定要删除 "${anime.name}" 吗？'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('取消'),
                               ),
-                              Positioned(
-                                left: 0,
-                                bottom: 0,
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 6.0, vertical: 4.0),
-                                  decoration: BoxDecoration(
-                                    color: isAnimeCompleted(anime)
-                                        ? Colors.red
-                                        : Colors.blue,
-                                    borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(8.0),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    isAnimeCompleted(anime) ? "已完结" : '连载中',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12.0,
-                                    ),
-                                  ),
-                                ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text('删除'),
                               ),
                             ],
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: Text(
-                            anime.name,
-                            style: TextStyle(
-                              fontSize: 12.0,
-                              overflow: TextOverflow.ellipsis,
+                        );
+                        if (confirm == true) {
+                          await _animeService.deleteAnime(anime.id);
+                          _refreshAnimes();
+                        }
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Stack(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    image: DecorationImage(
+                                      image: NetworkImage(anime.cover),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  left: 0,
+                                  bottom: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6.0, vertical: 4.0),
+                                    decoration: BoxDecoration(
+                                      color: isAnimeCompleted(anime)
+                                          ? Colors.red
+                                          : Colors.blue,
+                                      borderRadius: const BorderRadius.only(
+                                        bottomLeft: Radius.circular(8.0),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      isAnimeCompleted(anime) ? "已完结" : '连载中',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: Text(
-                            '更新 第${getCurrentWeekEpisode(anime)}集',
-                            style: TextStyle(
-                              fontSize: 12.0,
+                          Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: Text(
+                              anime.name,
+                              style: const TextStyle(
+                                fontSize: 12.0,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            } else {
-              return Center(child: CircularProgressIndicator());
-            }
-          },
+                          Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: Text(
+                              '更新 第${getCurrentWeekEpisode(anime)}集',
+                              style: const TextStyle(
+                                fontSize: 12.0,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              } else {
+                // 无数据时返回一个可滚动的 ListView
+                return ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: const [
+                    SizedBox(height: 200),
+                    Center(child: Text("暂无数据")),
+                  ],
+                );
+              }
+            },
+          ),
         ),
       ),
     );
