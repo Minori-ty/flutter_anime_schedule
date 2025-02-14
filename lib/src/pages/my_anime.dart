@@ -11,6 +11,8 @@ class MyAnimePage extends StatefulWidget {
   _MyAnimePageState createState() => _MyAnimePageState();
 }
 
+const double space = 12;
+
 class _MyAnimePageState extends State<MyAnimePage> {
   final AnimeService _animeService = AnimeService();
 
@@ -39,7 +41,7 @@ class _MyAnimePageState extends State<MyAnimePage> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+        padding: const EdgeInsets.symmetric(horizontal: space),
         child: FutureBuilder(
           future: _animeService.getAnimes(),
           builder: (context, snapshot) {
@@ -52,8 +54,8 @@ class _MyAnimePageState extends State<MyAnimePage> {
               return GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 3,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
+                  crossAxisSpacing: space,
+                  mainAxisSpacing: space,
                   childAspectRatio: 2 / 3.5,
                 ),
                 itemCount: animes.length,
@@ -103,9 +105,11 @@ class _MyAnimePageState extends State<MyAnimePage> {
                                 bottom: 0,
                                 child: Container(
                                   padding: EdgeInsets.symmetric(
-                                      horizontal: 4.0, vertical: 2.0),
-                                  color: Colors.red,
+                                      horizontal: 6.0, vertical: 4.0),
                                   decoration: BoxDecoration(
+                                    color: isAnimeCompleted(anime)
+                                        ? Colors.red
+                                        : Colors.blue,
                                     borderRadius: BorderRadius.only(
                                       bottomLeft: Radius.circular(8.0),
                                     ),
@@ -114,7 +118,7 @@ class _MyAnimePageState extends State<MyAnimePage> {
                                     isAnimeCompleted(anime) ? "已完结" : '连载中',
                                     style: TextStyle(
                                       color: Colors.white,
-                                      fontSize: 10.0,
+                                      fontSize: 12.0,
                                     ),
                                   ),
                                 ),
@@ -135,7 +139,7 @@ class _MyAnimePageState extends State<MyAnimePage> {
                         Padding(
                           padding: const EdgeInsets.all(2.0),
                           child: Text(
-                            '更新 第${getEpisodesToUpdateThisWeek(anime)}集',
+                            '更新 第${getCurrentWeekEpisode(anime)}集',
                             style: TextStyle(
                               fontSize: 12.0,
                             ),
