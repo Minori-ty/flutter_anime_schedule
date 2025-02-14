@@ -4,6 +4,7 @@ import 'package:flutter_anime_schedule/src/conponents/tab_appbar.dart';
 import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 import 'package:flutter_anime_schedule/src/services/anime_service.dart';
 import 'package:flutter_anime_schedule/src/utils/index.dart';
+import 'package:lottie/lottie.dart'; // Import the Lottie package
 
 class SchedulePage extends StatefulWidget {
   const SchedulePage({super.key});
@@ -66,7 +67,21 @@ class _SchedulePageState extends State<SchedulePage> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Error: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('No data available'));
+              return RefreshIndicator(
+                onRefresh: _refreshAnimes,
+                child: ListView(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height *
+                          0.6, // Adjust the height as needed
+                      child: Center(
+                        child: Lottie.asset(
+                            'assets/lottie/empty.json'), // Display Lottie animation
+                      ),
+                    ),
+                  ],
+                ),
+              );
             } else {
               var groupedAnimes = snapshot.data!;
               return TabBarView(
@@ -89,6 +104,23 @@ class _SchedulePageState extends State<SchedulePage> {
 
   Widget _buildAnimeList(Map<String, List<AnimeModel>> animeMap) {
     var sortedTimes = animeMap.keys.toList()..sort();
+    if (sortedTimes.isEmpty) {
+      return RefreshIndicator(
+        onRefresh: _refreshAnimes,
+        child: ListView(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height *
+                  0.6, // Adjust the height as needed
+              child: Center(
+                child: Lottie.asset(
+                    'assets/lottie/empty.json'), // Display Lottie animation
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return RefreshIndicator(
       onRefresh: _refreshAnimes,
       child: ListView.builder(

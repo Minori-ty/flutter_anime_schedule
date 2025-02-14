@@ -5,6 +5,7 @@ import 'package:flutter_anime_schedule/src/services/anime_service.dart';
 import 'package:flutter_anime_schedule/src/pages/add_anime.dart';
 import 'package:flutter_anime_schedule/src/pages/anime_detail.dart';
 import 'package:flutter_anime_schedule/src/utils/index.dart';
+import 'package:lottie/lottie.dart'; // Import the Lottie package
 
 class MyAnimePage extends StatefulWidget {
   const MyAnimePage({super.key});
@@ -86,6 +87,21 @@ class _MyAnimePageState extends State<MyAnimePage> {
               } else if (snapshot.hasData) {
                 var data = snapshot.data as Map<String, dynamic>;
                 var animes = data['data'] as List<AnimeModel>;
+                if (animes.isEmpty) {
+                  return ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height *
+                            0.6, // Adjust the height as needed
+                        child: Center(
+                          child: Lottie.asset(
+                              'assets/lottie/empty.json'), // Display Lottie animation
+                        ),
+                      ),
+                    ],
+                  );
+                }
                 return GridView.builder(
                   // 设置 AlwaysScrollableScrollPhysics 确保即使内容较少也能下拉刷新
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -221,9 +237,15 @@ class _MyAnimePageState extends State<MyAnimePage> {
                 // 无数据时返回一个可滚动的 ListView
                 return ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
-                  children: const [
-                    SizedBox(height: 200),
-                    Center(child: Text("暂无数据")),
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height *
+                          0.6, // Adjust the height as needed
+                      child: Center(
+                        child: Lottie.asset(
+                            'assets/lottie/empty.json'), // Display Lottie animation
+                      ),
+                    ),
                   ],
                 );
               }
