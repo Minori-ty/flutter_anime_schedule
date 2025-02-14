@@ -107,16 +107,21 @@ int getCurrentWeekUpdatedEpisodes(AnimeModel anime) {
   // 初始化已更新的集数
   int updatedEpisodes = 1;
 
-  // 每周一周一周地加，直到加到本周
-  while (
-      firstEpisodeTime.isBefore(now) && updatedEpisodes < anime.totalEpisode) {
+  // 每周一周一周地加，直到时间在现在的时间的本周内
+  while (!isDateInTargetWeek(
+      DateCheckModel(target: now, date: firstEpisodeTime))) {
+    // 时间+7天
     firstEpisodeTime = firstEpisodeTime.add(Duration(days: 7));
+    // 已更新的集数++
     updatedEpisodes++;
+
+    // 如果超过了总集数，则返回总集数
+    if (updatedEpisodes > anime.totalEpisode) {
+      return anime.totalEpisode;
+    }
   }
 
-  return updatedEpisodes > anime.totalEpisode
-      ? anime.totalEpisode
-      : updatedEpisodes;
+  return updatedEpisodes;
 }
 
 /// 计算已经更新的集数
@@ -206,4 +211,27 @@ bool isUpdateTimeReached(AnimeModel anime) {
     return now.isAfter(updateTimeToday) ||
         now.isAtSameMomentAs(updateTimeToday);
   }
+}
+
+class DateCheckModel {
+  DateTime target;
+  DateTime date;
+
+  DateCheckModel({required this.target, required this.date});
+}
+
+/// 判断date是否属于target所属的那周
+bool isDateInTargetWeek(DateCheckModel model) {
+  DateTime target = model.target;
+  DateTime date = model.date;
+
+  // 获取target所属周的开始日期（周一）
+  DateTime startOfWeek = target.subtract(Duration(days: target.weekday - 1));
+
+  // 获取target所属周的结束日期（周日）
+  DateTime endOfWeek = startOfWeek.add(Duration(days: 6));
+
+  // 判断date是否在target所属的那周
+  return date.isAfter(startOfWeek.subtract(const Duration(seconds: 1))) &&
+      date.isBefore(endOfWeek.add(const Duration(seconds: 1)));
 }
