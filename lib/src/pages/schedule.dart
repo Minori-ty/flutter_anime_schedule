@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_anime_schedule/src/conponents/tab_appbar.dart';
 import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 import 'package:flutter_anime_schedule/src/services/anime_service.dart';
@@ -123,10 +124,27 @@ class _SchedulePageState extends State<SchedulePage> {
                               margin: const EdgeInsets.only(right: 10),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4.0),
-                                image: DecorationImage(
-                                  image: NetworkImage(anime.cover),
-                                  fit: BoxFit.cover,
+                              ),
+                              child: CachedNetworkImage(
+                                imageUrl: anime.cover,
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
                                 ),
+                                placeholder: (context, url) => Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[300],
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Center(child: Icon(Icons.error)),
                               ),
                             ),
                             Column(
@@ -147,7 +165,7 @@ class _SchedulePageState extends State<SchedulePage> {
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: isUpdateTimeReached(anime)
-                                        ? Colors.pinkAccent
+                                        ? Colors.pinkAccent[200]
                                         : Colors.grey,
                                   ),
                                 ),
