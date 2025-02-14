@@ -123,3 +123,42 @@ DateTime parseDateTime(String dateTimeString) {
     int.parse(timeParts[1]),
   );
 }
+
+/// 分组 AnimeModel，根据 updateWeek 和 updateTime
+Map<String, Map<String, List<AnimeModel>>> groupAnimeByWeekAndTime(
+    List<AnimeModel> animeList) {
+  Map<String, Map<String, List<AnimeModel>>> groupedAnime = {
+    '周一': {},
+    '周二': {},
+    '周三': {},
+    '周四': {},
+    '周五': {},
+    '周六': {},
+    '周日': {},
+  };
+
+  for (AnimeModel anime in animeList) {
+    if (!groupedAnime[anime.updateWeek]!.containsKey(anime.updateTime)) {
+      groupedAnime[anime.updateWeek]![anime.updateTime] = [];
+    }
+    groupedAnime[anime.updateWeek]![anime.updateTime]!.add(anime);
+  }
+
+  return groupedAnime;
+}
+
+/// 判断本周是否已经到了更新时间，未到则返回 false，到了或者超过则返回 true
+bool isUpdateTimeReached(AnimeModel anime) {
+  DateTime now = DateTime.now();
+  int updateWeekday = _convertWeekdayToInt(anime.updateWeek);
+  List<String> timeParts = anime.updateTime.split(':');
+  DateTime updateTimeThisWeek = DateTime(now.year, now.month, now.day,
+      int.parse(timeParts[0]), int.parse(timeParts[1]));
+
+  while (updateTimeThisWeek.weekday != updateWeekday) {
+    updateTimeThisWeek = updateTimeThisWeek.add(const Duration(days: 1));
+  }
+
+  return now.isAfter(updateTimeThisWeek) ||
+      now.isAtSameMomentAs(updateTimeThisWeek);
+}
