@@ -15,6 +15,10 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
   final _formKey = GlobalKey<FormState>();
   final AnimeService _animeService = AnimeService();
 
+  final TextEditingController _currentEpisodeController =
+      TextEditingController();
+  final TextEditingController _totalEpisodeController = TextEditingController();
+
   late String _name;
   late String _updateWeek;
   late TimeOfDay _updateTime;
@@ -34,9 +38,11 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
     _currentEpisode = widget.anime.currentEpisode;
     _totalEpisode = widget.anime.totalEpisode;
     _cover = widget.anime.cover;
+
+    _currentEpisodeController.text = _currentEpisode.toString();
+    _totalEpisodeController.text = _totalEpisode.toString();
   }
 
-  // Helper: Parse a "HH:mm" formatted string to TimeOfDay.
   TimeOfDay _parseTime(String timeString) {
     try {
       final parts = timeString.split(':');
@@ -48,7 +54,6 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
     }
   }
 
-  // Helper: Format TimeOfDay to "HH:mm".
   String _formatTimeOfDay(TimeOfDay timeOfDay) {
     final hour = timeOfDay.hour.toString().padLeft(2, '0');
     final minute = timeOfDay.minute.toString().padLeft(2, '0');
@@ -144,12 +149,20 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                 onTap: () => _selectTime(context),
               ),
               TextFormField(
-                initialValue: _currentEpisode.toString(),
+                controller: _currentEpisodeController,
                 decoration: InputDecoration(labelText: '当前更新集数'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return '请输入当前更新集数';
+                  }
+                  final currentEpisode = int.tryParse(value);
+                  final totalEpisode =
+                      int.tryParse(_totalEpisodeController.text);
+                  if (currentEpisode != null &&
+                      totalEpisode != null &&
+                      currentEpisode > totalEpisode) {
+                    return '当前更新集数不能超过总集数';
                   }
                   return null;
                 },
@@ -158,12 +171,20 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                 },
               ),
               TextFormField(
-                initialValue: _totalEpisode.toString(),
+                controller: _totalEpisodeController,
                 decoration: InputDecoration(labelText: '总集数'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return '请输入总集数';
+                  }
+                  final currentEpisode =
+                      int.tryParse(_currentEpisodeController.text);
+                  final totalEpisode = int.tryParse(value);
+                  if (currentEpisode != null &&
+                      totalEpisode != null &&
+                      currentEpisode > totalEpisode) {
+                    return '当前更新集数不能超过总集数';
                   }
                   return null;
                 },

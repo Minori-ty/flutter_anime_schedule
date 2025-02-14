@@ -11,6 +11,10 @@ class _AnimeFormPageState extends State<AnimeFormPage> {
   final _formKey = GlobalKey<FormState>();
   final _animeService = AnimeService();
 
+  final TextEditingController _currentEpisodeController =
+      TextEditingController();
+  final TextEditingController _totalEpisodeController = TextEditingController();
+
   String _name = '';
   String _updateWeek = '';
   TimeOfDay _updateTime = TimeOfDay(hour: 0, minute: 0);
@@ -92,11 +96,20 @@ class _AnimeFormPageState extends State<AnimeFormPage> {
                 onTap: () => _selectTime(context),
               ),
               TextFormField(
+                controller: _currentEpisodeController,
                 decoration: InputDecoration(labelText: '当前更新集数'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return '请输入当前更新集数';
+                  }
+                  final currentEpisode = int.tryParse(value);
+                  final totalEpisode =
+                      int.tryParse(_totalEpisodeController.text);
+                  if (currentEpisode != null &&
+                      totalEpisode != null &&
+                      currentEpisode > totalEpisode) {
+                    return '当前集数不能超过总集数';
                   }
                   return null;
                 },
@@ -105,11 +118,20 @@ class _AnimeFormPageState extends State<AnimeFormPage> {
                 },
               ),
               TextFormField(
+                controller: _totalEpisodeController,
                 decoration: InputDecoration(labelText: '总集数'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return '请输入总集数';
+                  }
+                  final currentEpisode =
+                      int.tryParse(_currentEpisodeController.text);
+                  final totalEpisode = int.tryParse(value);
+                  if (currentEpisode != null &&
+                      totalEpisode != null &&
+                      currentEpisode > totalEpisode) {
+                    return '当前集数不能超过总集数';
                   }
                   return null;
                 },

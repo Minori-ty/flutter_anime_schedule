@@ -186,7 +186,7 @@ class _MyAnimePageState extends State<MyAnimePage> {
                           Padding(
                             padding: const EdgeInsets.all(2.0),
                             child: Text(
-                              '更新 第${getCurrentWeekEpisode(anime)}集',
+                              '更新 第${getUpdatedEpisodes(anime)}集',
                               style: const TextStyle(
                                 fontSize: 12.0,
                               ),

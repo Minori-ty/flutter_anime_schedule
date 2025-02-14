@@ -145,10 +145,10 @@ class _SchedulePageState extends State<SchedulePage> {
                                   ),
                                 ),
                                 Text(
-                                  '${isCurrentTimeReachedUpdateTime(anime) ? '更新到' : "即将更新"} ${getCurrentWeekEpisode(anime)} 集',
+                                  '${isUpdateTimeReached(anime) ? '更新到' : "即将更新"} 第${getCurrentWeekUpdatedEpisodes(anime)} 集',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: isCurrentTimeReachedUpdateTime(anime)
+                                    color: isUpdateTimeReached(anime)
                                         ? Colors.pinkAccent
                                         : Colors.grey,
                                   ),

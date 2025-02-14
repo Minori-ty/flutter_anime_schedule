@@ -83,25 +83,66 @@ class TimeOfDay {
   }
 }
 
-/// 判断是否完结
+/// 判断番剧是否已经完结，返回 true or false
 bool isAnimeCompleted(AnimeModel anime) {
-  int currentWeekEpisode = getCurrentWeekEpisode(anime);
-  return currentWeekEpisode >= anime.totalEpisode;
-}
-
-/// 获取本周需要更新的集数
-int getCurrentWeekEpisode(AnimeModel anime) {
   String firstEpisodeTimeString = getFirstEpisodeTime(anime);
   DateTime firstEpisodeTime = parseDateTime(firstEpisodeTimeString);
 
   DateTime now = DateTime.now();
   Duration difference = now.difference(firstEpisodeTime);
-  int weeksSinceFirstEpisode = (difference.inDays / 7).floor() + 1;
+  int totalDurationInMinutes = anime.totalEpisode * 7 * 24 * 60;
 
-  if (weeksSinceFirstEpisode > anime.totalEpisode) {
-    return anime.totalEpisode;
+  return difference.inMinutes >= totalDurationInMinutes;
+}
+
+/// 获取本周需要更新/已经更新了的集数
+int getCurrentWeekUpdatedEpisodes(AnimeModel anime) {
+  // 获取第一集的时间
+  String firstEpisodeTimeString = getFirstEpisodeTime(anime);
+  DateTime firstEpisodeTime = parseDateTime(firstEpisodeTimeString);
+
+  // 获取当前时间
+  DateTime now = DateTime.now();
+
+  // 初始化已更新的集数
+  int updatedEpisodes = 1;
+
+  // 每周一周一周地加，直到加到本周
+  while (
+      firstEpisodeTime.isBefore(now) && updatedEpisodes < anime.totalEpisode) {
+    firstEpisodeTime = firstEpisodeTime.add(Duration(days: 7));
+    updatedEpisodes++;
   }
-  return weeksSinceFirstEpisode;
+
+  return updatedEpisodes > anime.totalEpisode
+      ? anime.totalEpisode
+      : updatedEpisodes;
+}
+
+/// 计算已经更新的集数
+int getUpdatedEpisodes(AnimeModel anime) {
+  // 获取第一集的时间
+  String firstEpisodeTimeString = getFirstEpisodeTime(anime);
+  DateTime firstEpisodeTime = parseDateTime(firstEpisodeTimeString);
+
+  // 获取当前时间
+  DateTime now = DateTime.now();
+
+  // 初始化已更新的集数
+  int updatedEpisodes = 1;
+
+  // 每周一周一周地加，直到加到本周
+  while (
+      firstEpisodeTime.isBefore(now) && updatedEpisodes < anime.totalEpisode) {
+    firstEpisodeTime = firstEpisodeTime.add(Duration(days: 7));
+    if (firstEpisodeTime.isBefore(now)) {
+      updatedEpisodes++;
+    }
+  }
+
+  return updatedEpisodes > anime.totalEpisode
+      ? anime.totalEpisode
+      : updatedEpisodes;
 }
 
 /// 将 DateTime 转换为 YYYY-MM-DD HH:mm
@@ -148,7 +189,7 @@ Map<String, Map<String, List<AnimeModel>>> groupAnimeByWeekAndTime(
 }
 
 /// 判断当前时间是否已经到了更新时间点，本周未到则返回 false，到了或者超过则返回 true
-bool isCurrentTimeReachedUpdateTime(AnimeModel anime) {
+bool isUpdateTimeReached(AnimeModel anime) {
   DateTime now = DateTime.now();
   int currentWeekday = now.weekday;
   int updateWeekday = _convertWeekdayToInt(anime.updateWeek);
