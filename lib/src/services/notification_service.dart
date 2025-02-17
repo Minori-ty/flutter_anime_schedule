@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:typed_data';
 
@@ -50,7 +52,7 @@ class NotificationService {
     NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
     );
-    int id = DateTime.now().millisecondsSinceEpoch;
+    int id = Random().nextInt(1000000);
     await flutterLocalNotificationsPlugin.show(
       id,
       title,

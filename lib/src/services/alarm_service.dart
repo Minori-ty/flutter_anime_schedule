@@ -27,10 +27,6 @@ class AlarmService {
 
   @pragma('vm:entry-point')
   static void notification() async {
-    NotificationService().showNotification(
-      '启动定时任务',
-      '启动定时任务',
-    );
     AnimeService animeService = AnimeService();
     await Hive.initFlutter();
     if (!Hive.isAdapterRegistered(0)) {
