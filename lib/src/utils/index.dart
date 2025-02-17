@@ -4,7 +4,7 @@ import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 /// 返回格式：YYYY-MM-DD HH:mm
 String getFirstEpisodeTime(AnimeModel anime) {
   // 将更新周转换为整数表示
-  int updateWeekday = _convertWeekdayToInt(anime.updateWeek);
+  int updateWeekday = convertWeekdayToInt(anime.updateWeek);
 
   // 获取创建日期和更新时间
   DateTime createdAt = anime.createdAt;
@@ -48,7 +48,7 @@ String getFirstEpisodeTime(AnimeModel anime) {
 }
 
 /// 将更新周转换为整数表示
-int _convertWeekdayToInt(String weekday) {
+int convertWeekdayToInt(String weekday) {
   switch (weekday) {
     case '周一':
       return DateTime.monday;
@@ -200,7 +200,7 @@ Map<String, Map<String, List<AnimeModel>>> groupAnimeByWeekAndTime(
 bool isUpdateTimeReached(AnimeModel anime) {
   DateTime now = DateTime.now();
   int currentWeekday = now.weekday;
-  int updateWeekday = _convertWeekdayToInt(anime.updateWeek);
+  int updateWeekday = convertWeekdayToInt(anime.updateWeek);
 
   if (currentWeekday < updateWeekday) {
     return false;
