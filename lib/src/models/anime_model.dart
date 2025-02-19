@@ -11,7 +11,7 @@ class AnimeModel extends HiveObject {
   String name;
 
   @HiveField(2)
-  String updateWeek; // 中文的周一到周日
+  String updateWeekday; // 中文的周一到周日
 
   @HiveField(3)
   String updateTime; // HH:mm
@@ -30,7 +30,7 @@ class AnimeModel extends HiveObject {
 
   AnimeModel({
     required this.name,
-    required this.updateWeek,
+    required this.updateWeekday,
     required this.updateTime,
     required this.currentEpisode,
     required this.totalEpisode,

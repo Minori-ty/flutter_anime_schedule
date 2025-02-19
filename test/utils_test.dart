@@ -3,11 +3,11 @@ import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 import 'package:flutter_anime_schedule/src/utils/index.dart';
 
 void main() {
-  test('周在updateWeek之后', () {
+  test('周在updateWeekday之后', () {
     // 创建一个 AnimeModel 实例
     AnimeModel anime = AnimeModel(
       name: 'Test Anime',
-      updateWeek: '周三',
+      updateWeekday: '周三',
       updateTime: '14:30',
       currentEpisode: 3,
       totalEpisode: 12,
@@ -22,11 +22,11 @@ void main() {
     expect(firstEpisodeTime, '2025-01-29 14:30');
   });
 
-  test('周在updateWeek之前', () {
+  test('周在updateWeekday之前', () {
     // 创建一个 AnimeModel 实例
     AnimeModel anime = AnimeModel(
       name: 'Test Anime',
-      updateWeek: '周六',
+      updateWeekday: '周六',
       updateTime: '23:45',
       currentEpisode: 6,
       totalEpisode: 13,
@@ -45,7 +45,7 @@ void main() {
     // 创建一个 AnimeModel 实例
     AnimeModel anime = AnimeModel(
       name: 'Test Anime',
-      updateWeek: '周四',
+      updateWeekday: '周四',
       updateTime: '10:00',
       currentEpisode: 2,
       totalEpisode: 12,
@@ -64,7 +64,7 @@ void main() {
     // 创建一个 AnimeModel 实例
     AnimeModel anime = AnimeModel(
       name: 'Test Anime',
-      updateWeek: '周四',
+      updateWeekday: '周四',
       updateTime: '10:00',
       currentEpisode: 2,
       totalEpisode: 12,
@@ -83,7 +83,7 @@ void main() {
     // 创建一个 AnimeModel 实例
     AnimeModel anime = AnimeModel(
       name: '我独自升级',
-      updateWeek: '周六',
+      updateWeekday: '周六',
       updateTime: '23:45',
       currentEpisode: 6,
       totalEpisode: 13,
@@ -101,7 +101,7 @@ void main() {
     // 创建一个 AnimeModel 实例
     AnimeModel anime = AnimeModel(
       name: '我独自升级',
-      updateWeek: '周六',
+      updateWeekday: '周六',
       updateTime: '23:45',
       currentEpisode: 6,
       totalEpisode: 13,

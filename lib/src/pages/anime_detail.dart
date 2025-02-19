@@ -20,20 +20,28 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
   final TextEditingController _totalEpisodeController = TextEditingController();
 
   late String _name;
-  late String _updateWeek;
+  late String _updateWeekday;
   late TimeOfDay _updateTime;
   late int _currentEpisode;
   late int _totalEpisode;
   late String _cover;
 
-  final List<String> _updateWeeks = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+  final List<String> _updateWeekdays = [
+    '周一',
+    '周二',
+    '周三',
+    '周四',
+    '周五',
+    '周六',
+    '周日'
+  ];
 
   @override
   void initState() {
     super.initState();
     // Initialize form fields with the values from the passed anime.
     _name = widget.anime.name;
-    _updateWeek = widget.anime.updateWeek;
+    _updateWeekday = widget.anime.updateWeekday;
     _updateTime = _parseTime(widget.anime.updateTime);
     _currentEpisode = widget.anime.currentEpisode;
     _totalEpisode = widget.anime.totalEpisode;
@@ -77,7 +85,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
       _formKey.currentState!.save();
       // Update the existing AnimeModel instance's properties.
       widget.anime.name = _name;
-      widget.anime.updateWeek = _updateWeek;
+      widget.anime.updateWeekday = _updateWeekday;
       widget.anime.updateTime = _formatTimeOfDay(_updateTime);
       widget.anime.currentEpisode = _currentEpisode;
       widget.anime.totalEpisode = _totalEpisode;
@@ -121,8 +129,8 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
               ),
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(labelText: '更新周'),
-                value: _updateWeek.isNotEmpty ? _updateWeek : null,
-                items: _updateWeeks.map((week) {
+                value: _updateWeekday.isNotEmpty ? _updateWeekday : null,
+                items: _updateWeekdays.map((week) {
                   return DropdownMenuItem(
                     value: week,
                     child: Text(week),
@@ -130,7 +138,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                 }).toList(),
                 onChanged: (newValue) {
                   setState(() {
-                    _updateWeek = newValue!;
+                    _updateWeekday = newValue!;
                   });
                 },
                 validator: (value) {
@@ -140,7 +148,7 @@ class _AnimeDetailPageState extends State<AnimeDetailPage> {
                   return null;
                 },
                 onSaved: (value) {
-                  _updateWeek = value!;
+                  _updateWeekday = value!;
                 },
               ),
               ListTile(

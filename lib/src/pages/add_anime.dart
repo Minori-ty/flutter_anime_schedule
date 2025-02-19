@@ -16,13 +16,13 @@ class _AnimeFormPageState extends State<AnimeFormPage> {
   final TextEditingController _totalEpisodeController = TextEditingController();
 
   String _name = '';
-  String _updateWeek = '';
+  String _updateWeekday = '';
   TimeOfDay _updateTime = TimeOfDay(hour: 0, minute: 0);
   int _currentEpisode = 0;
   int _totalEpisode = 0;
   String _cover = '';
 
-  final _updateWeeks = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+  final _updateWeekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
@@ -68,8 +68,8 @@ class _AnimeFormPageState extends State<AnimeFormPage> {
               ),
               DropdownButtonFormField<String>(
                 decoration: InputDecoration(labelText: '更新周'),
-                value: _updateWeek.isNotEmpty ? _updateWeek : null,
-                items: _updateWeeks.map((week) {
+                value: _updateWeekday.isNotEmpty ? _updateWeekday : null,
+                items: _updateWeekdays.map((week) {
                   return DropdownMenuItem(
                     value: week,
                     child: Text(week),
@@ -77,7 +77,7 @@ class _AnimeFormPageState extends State<AnimeFormPage> {
                 }).toList(),
                 onChanged: (newValue) {
                   setState(() {
-                    _updateWeek = newValue!;
+                    _updateWeekday = newValue!;
                   });
                 },
                 validator: (value) {
@@ -87,7 +87,7 @@ class _AnimeFormPageState extends State<AnimeFormPage> {
                   return null;
                 },
                 onSaved: (value) {
-                  _updateWeek = value!;
+                  _updateWeekday = value!;
                 },
               ),
               ListTile(
@@ -168,7 +168,7 @@ class _AnimeFormPageState extends State<AnimeFormPage> {
       _formKey.currentState!.save();
       AnimeModel newAnime = AnimeModel(
         name: _name,
-        updateWeek: _updateWeek,
+        updateWeekday: _updateWeekday,
         updateTime: _formatTimeOfDay(_updateTime),
         currentEpisode: _currentEpisode,
         totalEpisode: _totalEpisode,

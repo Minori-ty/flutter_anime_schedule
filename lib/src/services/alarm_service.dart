@@ -36,7 +36,8 @@ class AlarmService {
     if (response['code'] == 200) {
       List<AnimeModel> animes = List<AnimeModel>.from(response['data']);
       for (var anime in animes) {
-        if (convertWeekdayToInt(anime.updateWeek) == DateTime.now().weekday &&
+        if (convertWeekdayToInt(anime.updateWeekday) ==
+                DateTime.now().weekday &&
             anime.updateTime ==
                 "${DateTime.now().hour}:${DateTime.now().minute}") {
           NotificationService().showNotification(

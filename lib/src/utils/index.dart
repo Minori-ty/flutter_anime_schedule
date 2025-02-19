@@ -4,7 +4,7 @@ import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 /// 返回格式：YYYY-MM-DD HH:mm
 String getFirstEpisodeTime(AnimeModel anime) {
   // 将更新周转换为整数表示
-  int updateWeekday = convertWeekdayToInt(anime.updateWeek);
+  int updateWeekdayday = convertWeekdayToInt(anime.updateWeekday);
 
   // 获取创建日期和更新时间
   DateTime createdAt = anime.createdAt;
@@ -18,17 +18,18 @@ String getFirstEpisodeTime(AnimeModel anime) {
   int offsetWeeks;
   DateTime date;
 
-  if (createdAt.weekday < updateWeekday ||
-      (createdAt.weekday == updateWeekday && createdAt.isBefore(updateTime))) {
+  if (createdAt.weekday < updateWeekdayday ||
+      (createdAt.weekday == updateWeekdayday &&
+          createdAt.isBefore(updateTime))) {
     // 当前周还没有更新
     offsetWeeks = anime.currentEpisode;
-    date =
-        createdAt.subtract(Duration(days: createdAt.weekday - updateWeekday));
+    date = createdAt
+        .subtract(Duration(days: createdAt.weekday - updateWeekdayday));
   } else {
     // 当前周已经更新
     offsetWeeks = anime.currentEpisode - 1;
-    date =
-        createdAt.subtract(Duration(days: createdAt.weekday - updateWeekday));
+    date = createdAt
+        .subtract(Duration(days: createdAt.weekday - updateWeekdayday));
   }
 
   // 计算第一集的日期
@@ -170,7 +171,7 @@ DateTime parseDateTime(String dateTimeString) {
   );
 }
 
-/// 分组 AnimeModel，根据 updateWeek 和 updateTime
+/// 分组 AnimeModel，根据 updateWeekday 和 updateTime
 Map<String, Map<String, List<AnimeModel>>> groupAnimeByWeekAndTime(
     List<AnimeModel> animeList) {
   Map<String, Map<String, List<AnimeModel>>> groupedAnime = {
@@ -186,10 +187,10 @@ Map<String, Map<String, List<AnimeModel>>> groupAnimeByWeekAndTime(
   for (AnimeModel anime in animeList) {
     // 过滤掉在本周之前完结的动漫
     if (isLastUpdateInThisWeekOrLater(anime)) {
-      if (!groupedAnime[anime.updateWeek]!.containsKey(anime.updateTime)) {
-        groupedAnime[anime.updateWeek]![anime.updateTime] = [];
+      if (!groupedAnime[anime.updateWeekday]!.containsKey(anime.updateTime)) {
+        groupedAnime[anime.updateWeekday]![anime.updateTime] = [];
       }
-      groupedAnime[anime.updateWeek]![anime.updateTime]!.add(anime);
+      groupedAnime[anime.updateWeekday]![anime.updateTime]!.add(anime);
     }
   }
 
@@ -200,14 +201,14 @@ Map<String, Map<String, List<AnimeModel>>> groupAnimeByWeekAndTime(
 bool isUpdateTimeReached(AnimeModel anime) {
   DateTime now = DateTime.now();
   int currentWeekday = now.weekday;
-  int updateWeekday = convertWeekdayToInt(anime.updateWeek);
+  int updateWeekdayday = convertWeekdayToInt(anime.updateWeekday);
 
-  if (currentWeekday < updateWeekday) {
+  if (currentWeekday < updateWeekdayday) {
     return false;
-  } else if (currentWeekday > updateWeekday) {
+  } else if (currentWeekday > updateWeekdayday) {
     return true;
   } else {
-    // currentWeekday == updateWeekday
+    // currentWeekday == updateWeekdayday
     List<String> timeParts = anime.updateTime.split(':');
     DateTime updateTimeToday = DateTime(now.year, now.month, now.day,
         int.parse(timeParts[0]), int.parse(timeParts[1]));

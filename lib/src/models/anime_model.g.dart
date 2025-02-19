@@ -18,7 +18,7 @@ class AnimeModelAdapter extends TypeAdapter<AnimeModel> {
     };
     return AnimeModel(
       name: fields[1] as String,
-      updateWeek: fields[2] as String,
+      updateWeekday: fields[2] as String,
       updateTime: fields[3] as String,
       currentEpisode: fields[4] as int,
       totalEpisode: fields[5] as int,
@@ -37,7 +37,7 @@ class AnimeModelAdapter extends TypeAdapter<AnimeModel> {
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.updateWeek)
+      ..write(obj.updateWeekday)
       ..writeByte(3)
       ..write(obj.updateTime)
       ..writeByte(4)
