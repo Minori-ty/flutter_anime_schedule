@@ -10,10 +10,10 @@ class SchedulePage extends StatefulWidget {
   const SchedulePage({super.key});
 
   @override
-  _SchedulePageState createState() => _SchedulePageState();
+  SchedulePageState createState() => SchedulePageState();
 }
 
-class _SchedulePageState extends State<SchedulePage> {
+class SchedulePageState extends State<SchedulePage> {
   late Future<Map<String, Map<String, List<AnimeModel>>>> _groupedAnimes;
 
   @override
@@ -189,6 +189,7 @@ class _SchedulePageState extends State<SchedulePage> {
                                     anime.name,
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                 ),

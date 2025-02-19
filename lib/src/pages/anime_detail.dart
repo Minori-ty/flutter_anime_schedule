@@ -5,13 +5,13 @@ import 'package:flutter_anime_schedule/src/services/anime_service.dart';
 class AnimeDetailPage extends StatefulWidget {
   final AnimeModel anime;
 
-  const AnimeDetailPage({Key? key, required this.anime}) : super(key: key);
+  const AnimeDetailPage({super.key, required this.anime});
 
   @override
-  _AnimeDetailPageState createState() => _AnimeDetailPageState();
+  AnimeDetailPageState createState() => AnimeDetailPageState();
 }
 
-class _AnimeDetailPageState extends State<AnimeDetailPage> {
+class AnimeDetailPageState extends State<AnimeDetailPage> {
   final _formKey = GlobalKey<FormState>();
   final AnimeService _animeService = AnimeService();
 

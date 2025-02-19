@@ -135,6 +135,9 @@ int getShouldUpdateEpisodes(AnimeModel anime) {
 
 /// 返回本周已经更新的集数
 int getUpdatedEpisodes(AnimeModel anime) {
+  if (isAnimeCompleted(anime)) {
+    return anime.totalEpisode;
+  }
   int episodes = getShouldUpdateEpisodes(anime);
   if (isUpdateInThisWeek(anime)) {
     return episodes;
@@ -161,7 +164,8 @@ DateTime getLastSunday235959() {
 bool isShowInThisWeek(AnimeModel anime) {
   DateTime lastSunday = getLastSunday235959();
   DateTime lastUpdateTime = getLastEpisodeTime(anime);
-  return lastUpdateTime.isAfter(lastSunday);
+  int espisode = getShouldUpdateEpisodes(anime);
+  return lastUpdateTime.isAfter(lastSunday) && espisode >= 1;
 }
 
 /// 分组 AnimeModel，根据 updateWeekday 和 updateTime

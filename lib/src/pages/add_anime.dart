@@ -3,11 +3,13 @@ import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 import 'package:flutter_anime_schedule/src/services/anime_service.dart';
 
 class AnimeFormPage extends StatefulWidget {
+  const AnimeFormPage({super.key});
+
   @override
-  _AnimeFormPageState createState() => _AnimeFormPageState();
+  AnimeFormPageState createState() => AnimeFormPageState();
 }
 
-class _AnimeFormPageState extends State<AnimeFormPage> {
+class AnimeFormPageState extends State<AnimeFormPage> {
   final _formKey = GlobalKey<FormState>();
   final _animeService = AnimeService();
 

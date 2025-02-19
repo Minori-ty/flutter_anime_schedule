@@ -11,12 +11,12 @@ class MyAnimePage extends StatefulWidget {
   const MyAnimePage({super.key});
 
   @override
-  _MyAnimePageState createState() => _MyAnimePageState();
+  MyAnimePageState createState() => MyAnimePageState();
 }
 
 const double space = 12;
 
-class _MyAnimePageState extends State<MyAnimePage> {
+class MyAnimePageState extends State<MyAnimePage> {
   final AnimeService _animeService = AnimeService();
   Future<Map<String, dynamic>>? _animeFuture;
 
