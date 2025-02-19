@@ -125,8 +125,12 @@ int getShouldUpdateEpisodes(AnimeModel anime) {
   DateTime now = DateTime.now();
   DateTime updateTime = getUpdateTimeThisWeek(anime, now);
   Duration timeDifference = updateTime.difference(getFirstEpisodeTime(anime));
-  int weeksPassed = timeDifference.inDays ~/ 7;
-  return weeksPassed + 1;
+  int weeksPassed = (timeDifference.inDays ~/ 7) + 1;
+  if (weeksPassed >= anime.totalEpisode) {
+    return anime.totalEpisode;
+  } else {
+    return weeksPassed;
+  }
 }
 
 /// 返回本周已经更新的集数
@@ -184,4 +188,8 @@ Map<String, Map<String, List<AnimeModel>>> groupAnimeByWeekAndTime(
   }
 
   return groupedAnime;
+}
+
+bool isAnimeCompleted(AnimeModel anime) {
+  return getShouldUpdateEpisodes(anime) == anime.totalEpisode;
 }

@@ -3,7 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_anime_schedule/src/conponents/tab_appbar.dart';
 import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 import 'package:flutter_anime_schedule/src/services/anime_service.dart';
-import 'package:flutter_anime_schedule/src/utils/index.dart';
+import 'package:flutter_anime_schedule/src/utils/utils.dart';
 import 'package:lottie/lottie.dart'; // Import the Lottie package
 
 class SchedulePage extends StatefulWidget {
@@ -193,10 +193,10 @@ class _SchedulePageState extends State<SchedulePage> {
                                   ),
                                 ),
                                 Text(
-                                  '${isUpdateTimeReached(anime) ? '更新到' : "即将更新"} 第${getCurrentWeekUpdatedEpisodes(anime)}集',
+                                  '${isUpdateInThisWeek(anime) ? '更新到' : "即将更新"} 第${getShouldUpdateEpisodes(anime)}集',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: isUpdateTimeReached(anime)
+                                    color: isUpdateInThisWeek(anime)
                                         ? Colors.pinkAccent[200]
                                         : Colors.grey,
                                   ),

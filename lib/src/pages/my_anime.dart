@@ -4,7 +4,7 @@ import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 import 'package:flutter_anime_schedule/src/services/anime_service.dart';
 import 'package:flutter_anime_schedule/src/pages/add_anime.dart';
 import 'package:flutter_anime_schedule/src/pages/anime_detail.dart';
-import 'package:flutter_anime_schedule/src/utils/index.dart';
+import 'package:flutter_anime_schedule/src/utils/utils.dart';
 import 'package:lottie/lottie.dart'; // Import the Lottie package
 
 class MyAnimePage extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter_anime_schedule/src/services/notification_service.dart';
 import 'package:flutter_anime_schedule/src/models/anime_model.dart';
 import 'package:flutter_anime_schedule/src/services/anime_service.dart';
-import 'package:flutter_anime_schedule/src/utils/index.dart';
+import 'package:flutter_anime_schedule/src/utils/utils.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class AlarmService {
@@ -41,8 +41,8 @@ class AlarmService {
             anime.updateTime ==
                 "${DateTime.now().hour}:${DateTime.now().minute}") {
           NotificationService().showNotification(
-            '${anime.name}第${getCurrentWeekUpdatedEpisodes(anime)}集更新',
-            '${anime.name}第${getCurrentWeekUpdatedEpisodes(anime)}集更新',
+            '${anime.name}第${getShouldUpdateEpisodes(anime)}集更新',
+            '${anime.name}第${getShouldUpdateEpisodes(anime)}集更新',
           );
         }
       }
