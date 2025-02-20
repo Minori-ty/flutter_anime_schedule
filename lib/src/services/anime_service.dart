@@ -18,6 +18,7 @@ class AnimeService {
 
   Future<Map<String, dynamic>> updateAnime(AnimeModel anime) async {
     final box = await Hive.openBox<AnimeModel>(boxName);
+    anime.createdAt = DateTime.now();
     await box.put(anime.id, anime);
     return {'code': 200, 'msg': "修改成功", 'data': anime};
   }
@@ -36,5 +37,13 @@ class AnimeService {
     final box = await Hive.openBox<AnimeModel>(boxName);
     final animes = box.values.toList();
     return {'code': 200, 'msg': "查找成功", 'data': animes};
+  }
+
+  Future<Map<String, dynamic>> updateAnimeNotificationStatus(
+      AnimeModel anime, bool status) async {
+    final box = await Hive.openBox<AnimeModel>(boxName);
+    anime.isNotification = status;
+    await box.put(anime.id, anime);
+    return {'code': 200, 'msg': "修改成功", 'data': anime};
   }
 }

@@ -28,6 +28,9 @@ class AnimeModel extends HiveObject {
   @HiveField(7)
   DateTime createdAt;
 
+  @HiveField(8)
+  bool isNotification;
+
   AnimeModel({
     required this.name,
     required this.updateWeekday,
@@ -36,5 +39,6 @@ class AnimeModel extends HiveObject {
     required this.totalEpisode,
     required this.cover,
   })  : id = DateTime.now().millisecondsSinceEpoch.toString(),
-        createdAt = DateTime.now();
+        createdAt = DateTime.now(),
+        isNotification = false;
 }
